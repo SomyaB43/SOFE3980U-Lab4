@@ -1,29 +1,52 @@
 pipeline {
-  agent any
-  tools {
-    maven 'maven' 
-  }
-  stages {
-    stage ('Init') {
-      steps {
-        sh 'echo "Start of Job"'
-        sh 'ls -la'
-      }
+    agent any
+    
+    environment {
+        PROJECT_ID = 'sunny-footing-418419'
+        APP_NAME = 'app'
+        CLUSTER_NAME = 'sofe3980u' // Use your actual cluster name here
+        CLUSTER_ZONE = 'northamerica-northeast1-b' // Use the zone you've set here
+        IMAGE_TAG = "gcr.io/${PROJECT_ID}/${APP_NAME}:${BUILD_NUMBER}"
     }
-    stage ('test') {
-      steps {
-        sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
-      }
+    
+    stages {
+        stage('Build') {
+            steps {
+                // Steps for building your application...
+                sh 'mvn clean package -DskipTests' // Example Maven build step
+            }
+        }
+        
+        stage('Containerize') {
+            steps {
+                // Steps for containerizing your application...
+                script {
+                    docker.build("${IMAGE_TAG}", './BinaryCalculatorWebapp/') // Example Docker build step
+                }
+            }
+        }
+        
+        stage('Push Image') {
+            steps {
+                // Steps for pushing the Docker image to Container Registry...
+                script {
+                    docker.withRegistry('https://gcr.io', 'gcp-credentials') {
+                        docker.image("${IMAGE_TAG}").push()
+                    }
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                // Steps for deploying your application to GKE...
+                script {
+                    withCredentials([gcpServiceAccount(credentialsId: 'gcp-credentials', jsonKeyVariable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                        sh "gcloud container clusters get-credentials ${CLUSTER_NAME} --zone ${CLUSTER_ZONE} --project ${PROJECT_ID}"
+                        sh "kubectl set image deployment/${APP_NAME} ${APP_NAME}=${IMAGE_TAG} --record"
+                    }
+                }
+            }
+        }
     }
-    stage ('build') {
-      steps {
-        sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
-      }
-    }
-    stage ('Deploy') {
-      steps {
-        sh 'echo "bye bye"'
-      }
-    }
-  }
 }
