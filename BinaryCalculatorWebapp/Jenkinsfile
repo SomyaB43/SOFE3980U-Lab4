@@ -22,18 +22,7 @@ pipeline {
     }
     stage ('Deploy') {
       steps {
-                script {
-                    def projectID = 'sunny-footing-418419'
-                    def appName = 'app'
-                    def clusterName = 'sofe3980u'
-                    def clusterZone = 'northamerica-northeast1-b'
-                    def imageTag = "gcr.io/${projectID}/${appName}:${BUILD_NUMBER}"
-                    
-                    withCredentials([gcpServiceAccount(credentialsId: 'gcp-credentials', jsonKeyVariable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
-                        sh "gcloud container clusters get-credentials ${clusterName} --zone ${clusterZone} --project ${projectID}"
-                    }
-                    sh "kubectl set image deployment/${appName} ${appName}=${imageTag} --record"
-               
+        sh 'echo "bye bye"'
       }
     }
   }
