@@ -1,3 +1,4 @@
+
 package com.ontariotechu.sofe3980U;
 
 import org.junit.Test;
@@ -56,5 +57,41 @@ public class BinaryControllerTest {
 			.andExpect(model().attribute("result", "1110"))
 			.andExpect(model().attribute("operand1", "111"));
     }
+
+    @Test
+    public void postParameterWithEmptyOperand1AndOperand2() throws Exception {
+        this.mvc.perform(post("/").param("operator", "+"))
+            .andExpect(status().isOk())
+            .andExpect(view().name("result"));
+    }
+
+    @Test
+    public void postParameterWithValidInputAndMultiplyOperator() throws Exception {
+    this.mvc.perform(post("/").param("operand1", "101").param("operator", "*").param("operand2", "10"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("result")) // Update expected view name to "result"
+        .andExpect(model().attribute("result", "1010")); // Update expected result value
+}
+
+    @Test
+    public void logicalOR() throws Exception {
+    this.mvc.perform(post("/").param("operator", "|").param("operand1", "1101").param("operand2", "1010"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("result", "1111"));
+}
+
+    @Test
+    public void logicalAND() throws Exception {
+    this.mvc.perform(post("/").param("operator", "&").param("operand1", "1010").param("operand2", "1101"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("result", "1000"));
+}
+
+    @Test
+    public void multiply() throws Exception {
+    this.mvc.perform(post("/").param("operator", "*").param("operand1", "1111").param("operand2", "1010"))
+        .andExpect(status().isOk())
+        .andExpect(model().attribute("result", "10010110"));
+}
 
 }
