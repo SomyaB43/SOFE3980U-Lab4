@@ -1,3 +1,4 @@
+
 package com.ontariotechu.sofe3980U;
 
 /**
@@ -79,4 +80,51 @@ public class Binary
 		return result;
 		
 	}
-}	
+
+	public static Binary LogicalOR(Binary num1, Binary num2) {
+		int maxValue = Math.max(num1.number.length(), num2.number.length());
+		char[] resultantArray = new char[maxValue];
+	
+		for (int i = 0; i < maxValue; i++) {
+			char bit1 = (i < num1.number.length()) ? num1.number.charAt(num1.number.length() - 1 - i) : '0';
+			char bit2 = (i < num2.number.length()) ? num2.number.charAt(num2.number.length() - 1 - i) : '0';
+	
+			// Perform bitwise OR
+			resultantArray[maxValue - 1 - i] = (bit1 == '1' || bit2 == '1') ? '1' : '0';
+		}
+	
+		return new Binary(new String(resultantArray));
+	}
+	
+	public static Binary LogicalAND(Binary num1, Binary num2) {
+		int maxValue = Math.max(num1.number.length(), num2.number.length());
+		char[] resultantArray = new char[maxValue];
+	
+		for (int i = 0; i < maxValue; i++) {
+			char bit1 = (i < num1.number.length()) ? num1.number.charAt(num1.number.length() - 1 - i) : '0';
+			char bit2 = (i < num2.number.length()) ? num2.number.charAt(num2.number.length() - 1 - i) : '0';
+	
+			// Perform bitwise AND
+			resultantArray[maxValue - 1 - i] = (bit1 == '1' && bit2 == '1') ? '1' : '0';
+		}
+	
+		return new Binary(new String(resultantArray));
+	}
+	
+	public static Binary multiply(Binary num1, Binary num2) {
+		Binary result = new Binary("0");
+		Binary placeholder = new Binary(num1.getValue());
+	
+		for (int i = num2.number.length() - 1; i >= 0; i--) {
+			if (num2.number.charAt(i) == '1') {
+				result = add(result, placeholder);
+			}
+	
+			placeholder = new Binary(placeholder.getValue() + "0");  // Shift bits to the left
+		}
+	
+		return result;
+	}
+	
+	}
+	
