@@ -232,7 +232,7 @@ public class BinaryAPIControllerTest {
 	public void multiplyZeros() throws Exception {
 		this.mvc.perform(get("/multiply").param("operand1", "0").param("operand2", "0"))
 				.andExpect(status().isOk())
-				.andExpect(content().string(""));
+				.andExpect(content().string("0"));
 	}
 
 }
