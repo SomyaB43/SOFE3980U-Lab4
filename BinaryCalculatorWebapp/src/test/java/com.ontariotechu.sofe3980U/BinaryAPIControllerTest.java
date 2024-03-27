@@ -48,4 +48,47 @@ public class BinaryAPIControllerTest {
 			.andExpect(MockMvcResultMatchers.jsonPath("$.result").value(10001))
 			.andExpect(MockMvcResultMatchers.jsonPath("$.operator").value("add"));
     }
+
+    @Test
+    public void multiplyJson() throws Exception {
+        this.mvc.perform(get("/multiply_json").param("operand1", "1101").param("operand2", "1010"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.operand1").value("1101"))
+            .andExpect(jsonPath("$.operand2").value("1010"))
+            .andExpect(jsonPath("$.result").value("10000010"))
+            .andExpect(jsonPath("$.operator").value("multiply"));
+    }
+
+@Test
+public void Logical_OR() throws Exception {
+    mvc.perform(get("/logical_or_json")
+            .param("operand1", "1010")
+            .param("operand2", "1101"))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType("application/json;charset=UTF-8"))
+            .andExpect(jsonPath("$.operand1").value("1010"))
+            .andExpect(jsonPath("$.operator").value("logical_or"))
+            .andExpect(jsonPath("$.operand2").value("1101"))
+            .andExpect(jsonPath("$.result").value("1111"));
+}
+
+@Test
+   public void logical_or_json() throws Exception {
+    this.mvc.perform(get("/logical_or_json").param("operand1", "1010").param("operand2", "1101"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.operand1").value("1010"))
+        .andExpect(jsonPath("$.operand2").value("1101"))
+        .andExpect(jsonPath("$.result").value("1111"))
+        .andExpect(jsonPath("$.operator").value("logical_or"));
+}
+
+@Test
+public void logical_and_json() throws Exception {
+    this.mvc.perform(get("/logical_and_json").param("operand1", "1010").param("operand2", "1101"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.operand1").value("1010"))
+        .andExpect(jsonPath("$.operand2").value("1101"))
+        .andExpect(jsonPath("$.result").value("1000"))
+        .andExpect(jsonPath("$.operator").value("logical_and"));
+}
 }
