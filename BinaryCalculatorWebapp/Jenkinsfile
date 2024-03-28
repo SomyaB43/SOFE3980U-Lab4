@@ -1,65 +1,55 @@
 pipeline {
     agent any
     environment {
-        CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6' // The ID you gave your credentials in Jenkins
+        // Define your environment variables here
+        CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
         PROJECT_ID = 'sofe3980-lab3'
         CLUSTER_NAME = 'sofe3980u'
-        LOCATION = 'northamerica-northeast1-b' // This combines the notion of zone/region into a single "location"
-        MANIFEST_PATTERN = './BinaryCalculatorWebapp/deployment.yaml' // Adjust based on where your Kubernetes manifests are located
+        LOCATION = 'northamerica-northeast1-b'
+        // Ensure MANIFEST_PATH is defined within the environment block
+        MANIFEST_PATH = './BinaryCalculatorWebapp/deployment.yaml'
     }
     tools {
-        maven 'maven' 
+        // Specify any tools needed, like Maven
+        maven 'maven'
     }
     stages {
         stage ('Init') {
             steps {
-                sh 'echo "Start of Job"'
+                echo "Start of Job"
                 sh 'ls -la'
             }
         }
-        stage ('test') {
+        stage ('Test') {
             steps {
                 sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
             }
         }
-        stage ('build') {
+        stage ('Build') {
             steps {
                 sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
             }
         }
-        // stage ('Deploy to GKE') {
-        //     steps {
-        //         step([
-        //             $class: 'KubernetesEngineBuilder',
-        //             projectId: env.PROJECT_ID,
-        //             clusterName: env.CLUSTER_NAME,
-        //             location: env.LOCATION,
-        //             manifestPattern: env.MANIFEST_PATTERN,
-        //             credentialsId: env.CREDENTIALS_ID,
-        //             verifyDeployments: true
-        //         ])
-        //     }
-        // }
-
         stage ('Debug Kubectl') {
             steps {
+                // Assuming kubectl is available or using the Kubernetes CLI Plugin for Jenkins
                 script {
-                    // Assuming kubectl is installed and configured, either via the Kubernetes CLI Plugin or directly in the agent
-                    sh 'kubectl version || true' // Check kubectl version, don't fail if kubectl isn't found
-                    sh 'kubectl get nodes || true' // List nodes, don't fail if there's an issue
-                    sh 'kubectl get svc || true' // List services in the default namespace, don't fail if there's an issue
+                    // Use the Kubernetes CLI Plugin to configure kubectl
+                    withKubeConfig(credentialsId: CREDENTIALS_ID) {
+                        sh 'kubectl version || true'
+                        sh 'kubectl get nodes || true'
+                        sh 'kubectl get svc || true'
+                    }
                 }
             }
         }
         stage ('Deploy to GKE') {
             steps {
                 script {
-                    // Use the Kubernetes CLI Plugin's withKubeConfig step if you're using a kubeconfig credential
                     withKubeConfig(credentialsId: CREDENTIALS_ID) {
-                        sh "kubectl apply -f ${MANIFEST_PATH}"
+                        // Use the sh step to apply your Kubernetes manifest
+                        sh "kubectl apply -f ${env.MANIFEST_PATH}"
                     }
-                    // If using in-cluster configuration (no kubeconfig needed), you can directly use kubectl commands
-                    // sh "kubectl apply -f ${MANIFEST_PATH}"
                 }
             }
         }
