@@ -1,55 +1,49 @@
 pipeline {
     agent any
     environment {
-        // Define your environment variables here
-        CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
-        PROJECT_ID = 'sofe3980-lab3'
-        CLUSTER_NAME = 'sofe3980u'
-        LOCATION = 'northamerica-northeast1-b'
-        // Ensure MANIFEST_PATH is defined within the environment block
-        MANIFEST_PATH = './BinaryCalculatorWebapp/deployment.yaml'
+        // Filled-in environment variables as per your details
+        GCP_CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
+        GKE_PROJECT_ID = 'sofe3980-lab3'
+        GKE_CLUSTER_NAME = 'sofe3980u'
+        GKE_CLUSTER_ZONE = 'northamerica-northeast1-b'
     }
     tools {
-        // Specify any tools needed, like Maven
+        // Define any tools needed. Example: Maven
         maven 'maven'
     }
     stages {
         stage ('Init') {
             steps {
-                echo "Start of Job"
+                echo "Start of the pipeline"
                 sh 'ls -la'
             }
         }
         stage ('Test') {
             steps {
+                // Example test command for a Maven project
                 sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
             }
         }
         stage ('Build') {
             steps {
+                // Example build command for a Maven project
                 sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
-            }
-        }
-        stage ('Debug Kubectl') {
-            steps {
-                // Assuming kubectl is available or using the Kubernetes CLI Plugin for Jenkins
-                script {
-                    // Use the Kubernetes CLI Plugin to configure kubectl
-                    withKubeConfig(credentialsId: CREDENTIALS_ID) {
-                        sh 'kubectl version || true'
-                        sh 'kubectl get nodes || true'
-                        sh 'kubectl get svc || true'
-                    }
-                }
             }
         }
         stage ('Deploy to GKE') {
             steps {
                 script {
-                    withKubeConfig(credentialsId: CREDENTIALS_ID) {
-                        // Use the sh step to apply your Kubernetes manifest
-                        sh "kubectl apply -f ${env.MANIFEST_PATH}"
-                    }
+                    // Deployment step using the GKE Plugin
+                    step([
+                        $class: 'KubernetesEngineBuilder',
+                        credentialsId: GCP_CREDENTIALS_ID,
+                        projectId: GKE_PROJECT_ID,
+                        clusterName: GKE_CLUSTER_NAME,
+                        location: GKE_CLUSTER_ZONE,
+                        manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
+                        namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
+                        verifyDeployments: true // Verify the deployment status after applying the manifest
+                    ])
                 }
             }
         }
