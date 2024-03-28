@@ -30,20 +30,41 @@ pipeline {
                 sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
             }
         }
-        stage ('Deploy to GKE') {
+        // stage ('Deploy to GKE') {
+        //     steps {
+        //         script {
+        //             // Deployment step using the GKE Plugin
+        //             step([
+        //                 $class: 'KubernetesEngineBuilder',
+        //                 credentialsId: GCP_CREDENTIALS_ID,
+        //                 projectId: GKE_PROJECT_ID,
+        //                 clusterName: GKE_CLUSTER_NAME,
+        //                 location: GKE_CLUSTER_ZONE,
+        //                 manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
+        //                 namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
+        //                 verifyDeployments: true // Verify the deployment status after applying the manifest
+        //             ])
+        //         }
+        //     }
+        // }
+        stage('Check gcloud and kubectl') {
             steps {
+                // Check gcloud version
                 script {
-                    // Deployment step using the GKE Plugin
-                    step([
-                        $class: 'KubernetesEngineBuilder',
-                        credentialsId: GCP_CREDENTIALS_ID,
-                        projectId: GKE_PROJECT_ID,
-                        clusterName: GKE_CLUSTER_NAME,
-                        location: GKE_CLUSTER_ZONE,
-                        manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
-                        namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
-                        verifyDeployments: true // Verify the deployment status after applying the manifest
-                    ])
+                    try {
+                        sh 'gcloud --version'
+                    } catch(Exception e) {
+                        echo "gcloud is not installed or not found in PATH"
+                    }
+                }
+                
+                // Check kubectl version
+                script {
+                    try {
+                        sh 'kubectl version --client'
+                    } catch(Exception e) {
+                        echo "kubectl is not installed or not found in PATH"
+                    }
                 }
             }
         }
