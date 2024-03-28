@@ -28,20 +28,20 @@ pipeline {
       }
     }
     stage ('Deploy') {
-      // steps {
-      //   sh 'echo "bye bye"'
-      // }
       steps {
+        script {
           // Deploy using the Google Kubernetes Engine Plugin
-          step([$class: 'GoogleKubernetesEngineBuilder',
-              projectId: PROJECT_ID,
-              credentialsId: CREDENTIALS_ID,
-              clusterName: CLUSTER_NAME,
-              locationType: 'Zone', // Or 'Region' if you're using a regional cluster
-              zoneOrRegion: CLUSTER_ZONE,
-              manifestPattern: MANIFEST_PATTERN,
+          googleKubernetesEngine(
+              projectId: "${PROJECT_ID}",
+              credentialsId: "${CREDENTIALS_ID}",
+              clusterName: "${CLUSTER_NAME}",
+              locationType: 'Zone',
+              zoneOrRegion: "${CLUSTER_ZONE}",
+              manifestPattern: "${MANIFEST_PATTERN}",
               namespace: 'default', // Adjust if you're using a different namespace
-              verifyDeployments: true])
+              verifyDeployments: true
+          )
+        }
       }
     }
   }
