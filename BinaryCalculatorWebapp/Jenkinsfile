@@ -1,14 +1,14 @@
 pipeline {
   agent any
   environment {
-        CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6' // The ID you gave your credentials in Jenkins
-        PROJECT_ID = 'sofe3980-lab3'
-        CLUSTER_NAME = 'sofe3980u'
-        CLUSTER_ZONE = 'northamerica-northeast1-b'
-        MANIFEST_PATTERN = './BinaryCalculatorWebapp/deployment.yaml' // Adjust based on where your Kubernetes manifests are located
+    CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
+    PROJECT_ID = 'sofe3980-lab3'
+    CLUSTER_NAME = 'sofe3980u'
+    CLUSTER_ZONE = 'northamerica-northeast1-b'
+    MANIFEST_PATTERN = './BinaryCalculatorWebapp/deployment.yaml'
   }
   tools {
-    maven 'maven' 
+    maven 'maven'
   }
   stages {
     stage ('Init') {
@@ -30,16 +30,14 @@ pipeline {
     stage ('Deploy') {
       steps {
         script {
-          // Deploy using the Google Kubernetes Engine Plugin
           googleKubernetesEngine(
-              projectId: "${PROJECT_ID}",
-              credentialsId: "${CREDENTIALS_ID}",
-              clusterName: "${CLUSTER_NAME}",
-              locationType: 'Zone',
-              zoneOrRegion: "${CLUSTER_ZONE}",
-              manifestPattern: "${MANIFEST_PATTERN}",
-              namespace: 'default', // Adjust if you're using a different namespace
-              verifyDeployments: true
+            credentialsId: "${CREDENTIALS_ID}",
+            projectId: "${PROJECT_ID}",
+            clusterName: "${CLUSTER_NAME}",
+            clusterZone: "${CLUSTER_ZONE}",
+            manifestPattern: "${MANIFEST_PATTERN}",
+            namespace: 'default',
+            verifyDeployments: true
           )
         }
       }
