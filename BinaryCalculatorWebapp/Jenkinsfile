@@ -27,17 +27,40 @@ pipeline {
                 sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
             }
         }
+        // stage ('Deploy to GKE') {
+        //     steps {
+        //         step([
+        //             $class: 'KubernetesEngineBuilder',
+        //             projectId: env.PROJECT_ID,
+        //             clusterName: env.CLUSTER_NAME,
+        //             location: env.LOCATION,
+        //             manifestPattern: env.MANIFEST_PATTERN,
+        //             credentialsId: env.CREDENTIALS_ID,
+        //             verifyDeployments: true
+        //         ])
+        //     }
+        // }
+
+        stage ('Debug Kubectl') {
+            steps {
+                script {
+                    // Assuming kubectl is installed and configured, either via the Kubernetes CLI Plugin or directly in the agent
+                    sh 'kubectl version || true' // Check kubectl version, don't fail if kubectl isn't found
+                    sh 'kubectl get nodes || true' // List nodes, don't fail if there's an issue
+                    sh 'kubectl get svc || true' // List services in the default namespace, don't fail if there's an issue
+                }
+            }
+        }
         stage ('Deploy to GKE') {
             steps {
-                step([
-                    $class: 'KubernetesEngineBuilder',
-                    projectId: env.PROJECT_ID,
-                    clusterName: env.CLUSTER_NAME,
-                    location: env.LOCATION,
-                    manifestPattern: env.MANIFEST_PATTERN,
-                    credentialsId: env.CREDENTIALS_ID,
-                    verifyDeployments: true
-                ])
+                script {
+                    // Use the Kubernetes CLI Plugin's withKubeConfig step if you're using a kubeconfig credential
+                    withKubeConfig(credentialsId: CREDENTIALS_ID) {
+                        sh "kubectl apply -f ${MANIFEST_PATH}"
+                    }
+                    // If using in-cluster configuration (no kubeconfig needed), you can directly use kubectl commands
+                    // sh "kubectl apply -f ${MANIFEST_PATH}"
+                }
             }
         }
     }
