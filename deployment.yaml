@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: binarycalculator
-        image: gcr.io/sofe3980-lab3/sofe3980u:latest
+        image: gcr.io/sofe3980-lab3/binarycalculator-deployment:latest
         ports:
         - containerPort: 80
