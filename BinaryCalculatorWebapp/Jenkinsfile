@@ -1,7 +1,7 @@
 pipeline {
   environment {
     PROJECT = "sofe3980-lab3"
-    APP_NAME = "binarycalculator"
+    APP_NAME = "binarycalculator-deployment"
     CLUSTER = "sofe3980u"
     CLUSTER_ZONE = "northamerica-northeast1-b"
     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}"
