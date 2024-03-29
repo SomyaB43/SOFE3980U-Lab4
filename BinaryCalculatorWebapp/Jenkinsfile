@@ -1,76 +1,3 @@
-// pipeline {
-//     agent any
-//     environment {
-//         // Filled-in environment variables as per your details
-//         GCP_CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
-//         GKE_PROJECT_ID = 'sofe3980-lab3'
-//         GKE_CLUSTER_NAME = 'sofe3980u'
-//         GKE_CLUSTER_ZONE = 'northamerica-northeast1-b'
-//     }
-//     tools {
-//         // Define any tools needed. Example: Maven
-//         maven 'maven'
-//     }
-//     stages {
-//         stage ('Init') {
-//             steps {
-//                 echo "Start of the pipeline"
-//                 sh 'ls -la'
-//             }
-//         }
-//         stage ('Test') {
-//             steps {
-//                 // Example test command for a Maven project
-//                 sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
-//             }
-//         }
-//         stage ('Build') {
-//             steps {
-//                 // Example build command for a Maven project
-//                 sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
-//             }
-//         }
-//         // stage ('Deploy to GKE') {
-//         //     steps {
-//         //         script {
-//         //             // Deployment step using the GKE Plugin
-//         //             step([
-//         //                 $class: 'KubernetesEngineBuilder',
-//         //                 credentialsId: GCP_CREDENTIALS_ID,
-//         //                 projectId: GKE_PROJECT_ID,
-//         //                 clusterName: GKE_CLUSTER_NAME,
-//         //                 location: GKE_CLUSTER_ZONE,
-//         //                 manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
-//         //                 namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
-//         //                 verifyDeployments: true // Verify the deployment status after applying the manifest
-//         //             ])
-//         //         }
-//         //     }
-//         // }
-//         stage('Check gcloud and kubectl') {
-//             steps {
-//                 // Check gcloud version
-//                 script {
-//                     try {
-//                         sh 'gcloud --version'
-//                     } catch(Exception e) {
-//                         echo "gcloud is not installed or not found in PATH"
-//                     }
-//                 }
-                
-//                 // Check kubectl version
-//                 script {
-//                     try {
-//                         sh 'kubectl version --client'
-//                     } catch(Exception e) {
-//                         echo "kubectl is not installed or not found in PATH"
-//                     }
-//                 }
-//             }
-//         }
-//     }
-// }
-
 pipeline {
   environment {
     PROJECT = "sofe3980-lab3"
@@ -80,10 +7,10 @@ pipeline {
     IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}"
     JENKINS_CRED = "82740044-f5e9-4f3c-a093-c1e6eff0b7c6"
 
-	GCP_CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
-        GKE_PROJECT_ID = 'sofe3980-lab3'
-        GKE_CLUSTER_NAME = 'sofe3980u'
-        GKE_CLUSTER_ZONE = 'northamerica-northeast1-b'
+	// GCP_CREDENTIALS_ID = '82740044-f5e9-4f3c-a093-c1e6eff0b7c6'
+	// GKE_PROJECT_ID = 'sofe3980-lab3'
+	// GKE_CLUSTER_NAME = 'sofe3980u'
+	// GKE_CLUSTER_ZONE = 'northamerica-northeast1-b'
   }
   
 agent {
@@ -101,8 +28,8 @@ agent {
       serviceAccountName: cd-jenkins
       containers:
       - name: gcloud
-        image: gcr.io/cloud-builders/gcloud
-        //image: google/cloud-sdk:latest
+        //image: gcr.io/cloud-builders/gcloud
+        image: google/cloud-sdk:latest
         command:
         - cat
         tty: true
@@ -129,16 +56,9 @@ agent {
     //    sh 'mvn clean test -f ./BinaryCalculatorWebapp/pom.xml'
     //  }
     //}
-    stage ('build') {
-      steps {
-        sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
-      }
-    }
-    // stage('Build and push image with Container Builder') {
+    // stage ('build') {
     //   steps {
-    //     container('gcloud') {
-    //       sh "/builder/google-cloud-sdk/bin/gcloud builds submit -t ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
-    //     }
+    //     sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
     //   }
     // }
 	stage('Build and push image with Container Builder') {
@@ -152,26 +72,5 @@ agent {
 	        }
 	    }
 	}
-
-
-
-
- //    stage ('Deploy to GKE') {
-	// steps {
-	// script {
-	//     // Deployment step using the GKE Plugin
-	//     step([
-	// 	$class: 'KubernetesEngineBuilder',
-	// 	credentialsId: GCP_CREDENTIALS_ID,
-	// 	projectId: GKE_PROJECT_ID,
-	// 	clusterName: GKE_CLUSTER_NAME,
-	// 	location: GKE_CLUSTER_ZONE,
-	// 	manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
-	// 	namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
-	// 	verifyDeployments: true // Verify the deployment status after applying the manifest
-	//     ])
-	// }
- //      }
- //    }
   }
 }
