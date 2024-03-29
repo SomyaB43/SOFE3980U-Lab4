@@ -6,11 +6,11 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: binarycalculator
+      app: binarycalculator-deployment
   template:
     metadata:
       labels:
-        app: binarycalculator
+        app: binarycalculator-deployment
     spec:
       containers:
       - name: binarycalculator
