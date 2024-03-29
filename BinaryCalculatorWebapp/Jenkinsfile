@@ -143,7 +143,7 @@ agent {
     // }
 	stage('Build and push image with Container Builder') {
 	    steps {
-	        withCredentials([file(credentialsId: 'JENKINS_CRED', variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+	        withCredentials([file(credentialsId: env.JENKINS_CRED, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
 	            container('gcloud') {
 	                // Set up gcloud auth using the service account key file from Jenkins credentials
 	                sh "/builder/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
