@@ -143,16 +143,15 @@ agent {
     // }
 	stage('Build and push image with Container Builder') {
 	    steps {
-	        withCredentials([file(credentialsId: env.JENKINS_CRED, variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+	        withCredentials([[$class: 'GoogleRobotPrivateKeyCredentials', credentialsId: '82740044-f5e9-4f3c-a093-c1e6eff0b7c6']]) {
 	            container('gcloud') {
-	                // Set up gcloud auth using the service account key file from Jenkins credentials
-	                sh "/builder/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
-	                // Submit the build to Google Cloud Build
-	                sh "/builder/google-cloud-sdk/bin/gcloud builds submit -t ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
+	                sh "gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+	                sh "gcloud builds submit --tag ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
 	            }
 	        }
 	    }
 	}
+
 
 
  //    stage ('Deploy to GKE') {
