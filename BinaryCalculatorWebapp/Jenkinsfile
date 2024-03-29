@@ -71,7 +71,8 @@ agent {
   		steps {
 		    container('gcloud') {
 		      sh("gcloud container clusters get-credentials ${CLUSTER} --zone ${CLUSTER_ZONE} --project ${PROJECT}")
-		      sh("kubectl set image deployment/${APP_NAME} ${APP_NAME}=${IMAGE_TAG}")
+		      // sh("kubectl set image deployment/${APP_NAME} ${APP_NAME}=${IMAGE_TAG}")
+		      sh("kubectl set image deployment/binarycalculator-deployment binarycalculator=gcr.io/${PROJECT}/binarycalculator-deployment:latest")
 		    }
   		}
 		}
