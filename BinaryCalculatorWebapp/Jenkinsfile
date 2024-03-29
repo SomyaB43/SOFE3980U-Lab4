@@ -104,7 +104,7 @@ agent {
         image: gcr.io/cloud-builders/gcloud
         //image: google/cloud-sdk:latest
         command:
-        - cat
+        // - cat
         tty: true
       - name: kubectl
         image: gcr.io/cloud-builders/kubectl
