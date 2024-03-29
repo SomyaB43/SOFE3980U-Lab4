@@ -143,14 +143,16 @@ agent {
     // }
 	stage('Build and push image with Container Builder') {
 	    steps {
-	        withCredentials([[$class: 'GoogleRobotPrivateKeyCredentials', credentialsId: '82740044-f5e9-4f3c-a093-c1e6eff0b7c6']]) {
+	        withCredentials([file(credentialsId: "82740044-f5e9-4f3c-a093-c1e6eff0b7c6", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
 	            container('gcloud') {
-	                sh "gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS"
+	                // Now GOOGLE_APPLICATION_CREDENTIALS will have the path to the secret file
+	                sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
 	                sh "gcloud builds submit --tag ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
 	            }
 	        }
 	    }
 	}
+
 
 
 
