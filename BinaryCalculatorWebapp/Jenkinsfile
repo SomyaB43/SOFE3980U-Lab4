@@ -134,29 +134,29 @@ agent {
         sh 'mvn package -DskipTests -f ./BinaryCalculatorWebapp/pom.xml'
       }
     }
-    // stage('Build and push image with Container Builder') {
-    //   steps {
-    //     container('gcloud') {
-    //       sh "/builder/google-cloud-sdk/bin/gcloud builds submit -t ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
-    //     }
-    //   }
-    // }
-    stage ('Deploy to GKE') {
-	steps {
-	script {
-	    // Deployment step using the GKE Plugin
-	    step([
-		$class: 'KubernetesEngineBuilder',
-		credentialsId: GCP_CREDENTIALS_ID,
-		projectId: GKE_PROJECT_ID,
-		clusterName: GKE_CLUSTER_NAME,
-		location: GKE_CLUSTER_ZONE,
-		manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
-		namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
-		verifyDeployments: true // Verify the deployment status after applying the manifest
-	    ])
-	}
+    stage('Build and push image with Container Builder') {
+      steps {
+        container('gcloud') {
+          sh "/builder/google-cloud-sdk/bin/gcloud builds submit -t ${IMAGE_TAG} ./BinaryCalculatorWebapp/"
+        }
       }
     }
+ //    stage ('Deploy to GKE') {
+	// steps {
+	// script {
+	//     // Deployment step using the GKE Plugin
+	//     step([
+	// 	$class: 'KubernetesEngineBuilder',
+	// 	credentialsId: GCP_CREDENTIALS_ID,
+	// 	projectId: GKE_PROJECT_ID,
+	// 	clusterName: GKE_CLUSTER_NAME,
+	// 	location: GKE_CLUSTER_ZONE,
+	// 	manifestPattern: 'deployment.yaml', // Path to your Kubernetes manifest
+	// 	namespace: 'default', // Specify your Kubernetes namespace if different from 'default'
+	// 	verifyDeployments: true // Verify the deployment status after applying the manifest
+	//     ])
+	// }
+ //      }
+ //    }
   }
 }
