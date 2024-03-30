@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: binarycalculator-deployment
+spec:
+  strategy:
+      type: Recreate
+  replicas: 1
+  selector:
+    matchLabels:
+      app: binarycalculator-deployment
+  template:
+    metadata:
+      labels:
+        app: binarycalculator-deployment
+    spec:
+      containers:
+      - name: binarycalculator
+        image: gcr.io/sofe3980-lab3/binarycalculator-deployment:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
