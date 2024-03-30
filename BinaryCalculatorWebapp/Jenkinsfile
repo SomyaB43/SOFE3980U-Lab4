@@ -5,7 +5,7 @@ pipeline {
         CLUSTER = "sofe3980u"
         CLUSTER_ZONE = "northamerica-northeast1-b"
         IMAGE_TAG = "gcr.io/${PROJECT}/${APP_NAME}"
-        JENKINS_CRED = "82740044-f5e9-4f3c-a093-c1e6eff0b7c6"
+        JENKINS_CRED = "caf8edfd1f934022a6b9b079fef32e8534c7ec98"
     }
     
     agent {
@@ -57,7 +57,7 @@ spec:
         }
         stage('Build and push image with Container Builder') {
             steps {
-                withCredentials([file(credentialsId: "myjsonkey123", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
+                withCredentials([file(credentialsId: "Jenkins-Credential", variable: 'GOOGLE_APPLICATION_CREDENTIALS')]) {
                     container('gcloud') {
                         // Now GOOGLE_APPLICATION_CREDENTIALS will have the path to the secret file
                         sh "gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}"
